@@ -1,5 +1,4 @@
-import logging
-import solver
+import logging, solver
 
 logging.basicConfig(filename='app.log', level=logging.INFO)
 
