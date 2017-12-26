@@ -7,6 +7,6 @@ logging.info('start app exec')
 question = """Вставьте слово из трех букв, которое завершает первое слово и начинает второе.
 КОНТРА(. . .)НЯ"""
 answer = solver.get_possible_answer(question)
-print(answer)
+print("The answer is", answer)
 
 logging.info('end app exec')
