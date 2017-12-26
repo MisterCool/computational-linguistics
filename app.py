@@ -33,4 +33,4 @@ def run(qid):
         raise e
 
 
-run(62)
+run(36)
