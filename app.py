@@ -1,12 +1,64 @@
-import logging, solver
+import logging, os
 
-logging.basicConfig(filename='app.log', level=logging.INFO)
+  import solver, iq_test
 
-logging.info('start app exec')
+ 
 
-question = """Вставьте слово из трех букв, которое завершает первое слово и начинает второе.
-КОНТРА(. . .)НЯ"""
-answer = solver.get_possible_answer(question)
-print("Ответ: ", answer)
+ 
 
-logging.info('end app exec')
+  def run(qid):
+
+    try:
+
+        qc = iq_test.init_session(qid)
+
+        ticket_id = iq_test.get_ticket(qid)
+
+ 
+
+        if not os.path.exists('logs'):
+
+            os.makedirs('logs')
+
+        logging.basicConfig(format=u'[%(levelname)-8s] [%(name)s] [%(asctime)s]  %(message)s',
+
+                            filename='logs/%s.log' % ticket_id, level=logging.INFO)
+
+ 
+
+        logging.info('ticket_id: %s' % ticket_id)
+
+        print('ticket_id: %s' % ticket_id)
+
+ 
+
+        for i in range(qc):
+
+            logging.info('question #%i' % (i + 1))
+
+            q_obj = iq_test.get_question(ticket_id)
+
+            question = q_obj['questionText']
+
+            logging.info('question: %s' % question)
+
+            answer = solver.get_possible_answer(question)
+
+            logging.info('answer: %s' % answer)
+
+            iq_test.save_question(answer, ticket_id, q_obj['questionId'])
+
+ 
+
+        lnk = iq_test.get_result_link(ticket_id)
+
+        logging.info('result: %s' % lnk)
+
+        print('result: %s' % lnk)
+
+    except Exception as e:
+
+        print('Houston, We\'ve Got a Problem.')
+
+        raise e
+
