@@ -23,11 +23,13 @@ def clear_stop_words(tokens):
     return [t for t in tokens if (t not in stop_words)]
 
 
-def get_most_freq_words(sentence, output_count=100):
+def get_most_freq_words(sentence, output_count=100, need_char=False):
     clear_sentence = utils.clear_html_tags(sentence)
     tokens = nltk.word_tokenize(clear_sentence)
     tokens = utils.clear_not_alpha_tokens(tokens)
     tokens = clear_stop_words(tokens)
+    if need_char:
+        tokens = [w for w in tokens if len(w) == 1]
     freq_words = nltk.FreqDist(tokens)
     return freq_words.most_common(output_count)
 
@@ -39,17 +41,18 @@ def get_possible_answer_len(question):
         return match.group(0).count('.')
     return 0
 
-# TODO: need heuristic for number, character and pictures
+# TODO: need heuristic for number and pictures
 def get_possible_answer(question):
     mail_ru_answers = '\n '.join(answers_parser.get_answers(question))
-    logger.info('answers string: %s' % mail_ru_answers)
-    freq_words = get_most_freq_words(mail_ru_answers)
-    logger.info('freq words: %s' % freq_words)
+    # logger.info('mail.ru answers: %s' % mail_ru_answers)
+    need_char = question.find("букв") != -1 & question.find("слово") == -1
+    freq_words = get_most_freq_words(mail_ru_answers, need_char=need_char)
+    # logger.info('freq words answer: %s' % freq_words)
     possible_answer_len = get_possible_answer_len(question)
     if (possible_answer_len > 0):
         for answer in freq_words:
             if (len(answer[0]) == possible_answer_len):
-                logger.info('heuristic: dots (%i)' % possible_answer_len)
+                # logger.info('heuristic: dots (%i)' % possible_answer_len)
                 return answer[0]
     if (freq_words):
         return freq_words[0][0]
